@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: max-header-demo
+
+  cloud:
+    gateway:
+      routes:
+        - id: test-route
+          uri: "http://localhost:1035"
+          predicates:
+            - Path=/test/**
