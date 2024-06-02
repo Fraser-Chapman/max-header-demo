@@ -10,6 +10,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import wiremock.org.eclipse.jetty.http.HttpStatus;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 @ActiveProfiles("test")
@@ -18,6 +19,8 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 public class MaxHeaderSizeTest {
 
     static final int WIRE_MOCK_PORT = 1035;
+    private static final String LOCALHOST = "localhost";
+    private static final String SOME_ENDPOINT = "/test/some-endpoint";
 
     @Autowired
     private ApplicationContext applicationContext;
@@ -30,10 +33,13 @@ public class MaxHeaderSizeTest {
     }
 
     @Test
-    //TODO remove suppression
-    @SuppressWarnings("LineLength")
     void givenRequestExceedsMaxHeaderSize_returns431() {
-        final String giantHeader = "this is the worlds biggest header. It has to be really big in order to trigger our header size limit. It needs to be many many many bytes.".repeat(60);
+        // Given
+        stubFor(get(urlEqualTo(SOME_ENDPOINT)).withHost(equalTo(LOCALHOST)).withPort(WIRE_MOCK_PORT)
+                .willReturn(ok())
+        );
+
+        final String giantHeader = "x".repeat(9000);
 
         webClient.get().uri("/test/some-endpoint")
                 .header("x-massive-header", giantHeader)
