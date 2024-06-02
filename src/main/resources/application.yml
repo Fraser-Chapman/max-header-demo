@@ -1,9 +1,22 @@
+max-http-header-size: 40KB
+
+server:
+  http2:
+    enabled: true
+  max-http-header-size: ${max-http-header-size}
+  max-http-request-header-size: ${max-http-header-size}
+
 spring:
+  webflux:
+    multipart:
+      max-headers-size: ${max-http-header-size}
   application:
     name: max-header-demo
 
   cloud:
     gateway:
+      httpclient:
+        max-header-size: ${max-http-header-size}
       routes:
         - id: test-route
           uri: "http://localhost:1035"
